@@ -90,9 +90,13 @@ export default function NoteForm() {
       </div>
 
       <div className={css.actions}>
-        <Link href="/notes/filter/all" className={css.cancelButton}>
+        <button
+          type="button"
+          className={css.cancelButton}
+          onClick={() => router.back()}
+        >
           Cancel
-        </Link>
+        </button>
         <button type="submit" className={css.submitButton} disabled={isPending}>
           {isPending ? "Creating" : "Create"}
         </button>
