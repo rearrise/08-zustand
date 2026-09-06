@@ -2,11 +2,12 @@
 
 import { useId } from "react";
 import css from "./NoteForm.module.css";
-import { createNote } from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useNoteStore } from "@/lib/store/noteStore";
+import { CreateNote } from "@/types/note";
+import { createNote } from "@/lib/api";
 
 export default function NoteForm() {
   const queryClient = useQueryClient();
@@ -26,9 +27,20 @@ export default function NoteForm() {
       alert("Error happened!");
     },
   });
-
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
+    setDraft({ ...draft, [e.target.name]: e.target.value });
+  };
   const handleSubmit = (formData: FormData) => {
-    mutate(draft);
+    const values = {
+      title: formData.get("title") as string,
+      content: formData.get("content") as string,
+      tag: formData.get("tag") as CreateNote["tag"],
+    } as CreateNote;
+    mutate(values);
   };
   return (
     <form action={handleSubmit} className={css.form}>
@@ -40,10 +52,8 @@ export default function NoteForm() {
           name="title"
           required
           className={css.input}
-          defaultValue={draft.title}
-          onChange={(e) => {
-            setDraft({ title: e.target.value });
-          }}
+          defaultValue={draft?.title}
+          onChange={handleChange}
         />
         <p className={css.error} />
       </div>
@@ -55,10 +65,8 @@ export default function NoteForm() {
           name="content"
           rows={8}
           className={css.textarea}
-          defaultValue={draft.content}
-          onChange={(e) => {
-            setDraft({ content: e.target.value });
-          }}
+          defaultValue={draft?.content}
+          onChange={handleChange}
         />
         <p className={css.error} />
       </div>
@@ -69,10 +77,8 @@ export default function NoteForm() {
           id={`${fieldId}-tag`}
           name="tag"
           className={css.select}
-          defaultValue={draft.tag}
-          onChange={(e) => {
-            setDraft({ tag: e.target.value });
-          }}
+          defaultValue={draft?.tag}
+          onChange={handleChange}
         >
           <option value="Todo">Todo</option>
           <option value="Work">Work</option>
